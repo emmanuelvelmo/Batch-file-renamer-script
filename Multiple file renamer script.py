@@ -4,84 +4,87 @@ import pathlib
 import collections
 
 # Generar un nombre de directorio único para evitar sobreescribir
-def f_directorio_salida(base_dir):
+def f_directorio_salida():
     contador_val = 1
-    directorio_salida = base_dir
+    directorio_salida = ""
 
-    # Buscar un nombre que no exista aún
-    while pathlib.Path(directorio_salida).exists():
-        directorio_salida = f"{base_dir} ({contador_val})"
+    while True:
+        directorio_salida = f"Output files ({contador_val})"
+        if not pathlib.Path(directorio_salida).exists():
+            break
+        
         contador_val += 1
 
     return directorio_salida
 
-# Agrupar archivos por carpeta contenedora
-def f_agrupar_por_carpeta(directorio_base, extension_val):
+# Agrupar archivos por carpeta
+def f_agrupar_por_carpeta(directorio_capt, extension_val):
     archivos_por_carpeta = collections.defaultdict(list)
-    directorio_base = pathlib.Path(directorio_base)
 
-    # Buscar recursivamente archivos con la extensión especificada
-    for archivo in directorio_base.rglob(f"*.{extension_val}"):
-        if archivo.is_file():
-            carpeta = archivo.parent
-            archivos_por_carpeta[carpeta].append(archivo)
+    for entrada in pathlib.Path(directorio_capt).rglob(f'*.{extension_val}'):
+        if entrada.is_file():
+            carpeta_padre = entrada.parent
+            archivos_por_carpeta[carpeta_padre].append(entrada)
 
     return archivos_por_carpeta
 
 # Copiar y renombrar archivos en cada carpeta con su propio contador
-def f_copiar_archivos(directorio_base, archivos_por_carpeta, directorio_salida, extension_val):
+def f_copiar_archivos(directorio_capt, archivos_por_carpeta, directorio_salida, extension_val):
     total_archivos = 0
-    directorio_base = pathlib.Path(directorio_base)
-    directorio_salida = pathlib.Path(directorio_salida)
 
-    # Procesar cada carpeta que contiene archivos
     for carpeta_origen, archivos in archivos_por_carpeta.items():
         cantidad = len(archivos)
         ancho_numeracion = len(str(cantidad))
 
-        # Calcular ruta relativa y crear la carpeta destino
-        ruta_relativa = carpeta_origen.relative_to(directorio_base)
-        carpeta_destino = directorio_salida / ruta_relativa
+        # Ruta relativa de carpeta origen respecto al directorio base
+        ruta_relativa = os.path.relpath(carpeta_origen, directorio_capt)
+        carpeta_destino = pathlib.Path(directorio_salida) / ruta_relativa
+
+        # Crear estructura de carpetas destino
         carpeta_destino.mkdir(parents=True, exist_ok=True)
 
-        # Copiar cada archivo con nombre nuevo
-        for i, archivo in enumerate(archivos, start=1):
-            nombre_archivo = f"{str(i).zfill(ancho_numeracion)}.{extension_val}"
+        # Iterar sobre los archivos
+        for i in range(cantidad):
+            nombre_archivo = f"{str(i + 1).zfill(ancho_numeracion)}.{extension_val}"
             destino = carpeta_destino / nombre_archivo
-            shutil.copy2(archivo, destino)
+
+            shutil.copy2(archivos[i], destino)
+            
             total_archivos += 1
 
-    # Devolver la cantidad total de archivos procesados
     return total_archivos
 
-# Bucle principal infinito
+# Bucle principal continuo
 while True:
-    # Solicitar el directorio de entrada
+    # Directorio de entrada
     while True:
-        directorio_base = input("Enter directory: ").strip()
+        directorio_capt = input("Enter directory: ").strip()
 
-        if pathlib.Path(directorio_base).exists():
+        if pathlib.Path(directorio_capt).exists():
             break
 
         print("Wrong directory")
 
-    # Solicitar la extensión de los archivos a procesar
     extension_val = input("Enter file extension: ").strip()
 
-    # Agrupar los archivos por carpeta
-    archivos_por_carpeta = f_agrupar_por_carpeta(directorio_base, extension_val)
+    # Agrupar archivos por carpeta
+    archivos_por_carpeta = f_agrupar_por_carpeta(directorio_capt, extension_val)
 
-    # Crear directorio de salida único
-    directorio_salida = f_directorio_salida("Output files")
+    # Obtener directorio de salida
+    directorio_salida = f_directorio_salida()
+
+    # Crear directorio de salida
     pathlib.Path(directorio_salida).mkdir()
 
-    # Copiar y renombrar los archivos
-    contador_archivos = f_copiar_archivos(directorio_base, archivos_por_carpeta, directorio_salida, extension_val)
+    # Contar, copiar y renombrar archivos
+    contador_archivos = f_copiar_archivos(directorio_capt, archivos_por_carpeta, directorio_salida, extension_val)
 
-    # Mostrar resumen
     print("------------------------------------")
 
     if contador_archivos == 0:
+        # Eliminar directorio
+        shutil.rmtree(directorio_salida)
+        
         print("No modified files")
     elif contador_archivos == 1:
         print("1 modified file")
