@@ -132,7 +132,7 @@ int main()
         if (contador_archivos == 0)
         {
             // Eliminar directory
-            std::filesystem::remove(directorio_salida);
+            std::filesystem::remove_all(directorio_salida);
             
             std::cout << "No modified files\n";
         }
@@ -144,7 +144,6 @@ int main()
         {
             std::cout << contador_archivos << " modified files\n";
         }
-
         std::cout << "------------------------------------\n\n";
     }
 
