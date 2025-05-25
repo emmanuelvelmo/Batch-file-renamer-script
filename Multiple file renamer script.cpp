@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <map>
 
-// Generar un nombre de directory único para evitar sobreescribir
+// Generar un nombre de directorio único para evitar sobreescribir
 std::string f_directorio_salida()
 {
     int contador_val = 1;
@@ -94,7 +94,7 @@ int main()
 {
     while (true)
     {
-        // directory de entrada 
+        // Directorio de entrada 
         std::string directorio_capt;
 
         while (true)
@@ -118,10 +118,10 @@ int main()
         // Obtener directorio de carpeta y directorio de archivos en un mismo objeto
         std::map<std::filesystem::path, std::vector<std::filesystem::directory_entry>> archivos_por_carpeta = f_agrupar_por_carpeta(directorio_capt, extension_val);
 
-        // Obtener directory de salida
+        // Obtener directorio de salida
         std::string directorio_salida = f_directorio_salida();
         
-        // Crear directory de salida
+        // Crear directorio de salida
         std::filesystem::create_directory(directorio_salida);
         
         // Contar, copiar y renombrar archivos
@@ -131,7 +131,7 @@ int main()
 
         if (contador_archivos == 0)
         {
-            // Eliminar directory
+            // Eliminar directorio
             std::filesystem::remove_all(directorio_salida);
             
             std::cout << "No modified files\n";
