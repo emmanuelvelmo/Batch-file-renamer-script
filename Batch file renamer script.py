@@ -62,7 +62,7 @@ while True:
         if pathlib.Path(directorio_capt).exists():
             break
 
-        print("Wrong directory\n")
+        print("Wrong directory")
 
     extension_val = input("Enter file extension: ").strip('"\'')
 
