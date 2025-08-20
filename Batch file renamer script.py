@@ -84,10 +84,10 @@ while True:
         # Eliminar directorio
         shutil.rmtree(directorio_salida)
         
-        print("No modified files")
+        print("No renamed files")
     elif contador_archivos == 1:
-        print("1 modified file")
+        print("1 renamed file")
     else:
-        print(f"{contador_archivos} modified files")
+        print(f"{contador_archivos} renamed files")
 
     print("------------------------------------\n")
