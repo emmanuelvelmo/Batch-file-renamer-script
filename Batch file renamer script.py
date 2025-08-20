@@ -66,6 +66,8 @@ while True:
 
     extension_val = input("Enter file extension: ").strip('"\'')
 
+    print("------------------------------------")
+
     # Agrupar archivos por carpeta
     archivos_por_carpeta = f_agrupar_por_carpeta(directorio_capt, extension_val)
 
@@ -77,8 +79,6 @@ while True:
 
     # Contar, copiar y renombrar archivos
     contador_archivos = f_copiar_archivos(directorio_capt, archivos_por_carpeta, directorio_salida, extension_val)
-
-    print("------------------------------------")
 
     if contador_archivos == 0:
         # Eliminar directorio
